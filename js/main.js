@@ -4,15 +4,15 @@
  */
 
 import { loadState, saveState, exportStateAsJSON, importStateFromJSON } from './storage.js';
-import { initState, getState, updateCleanHours, checkDayRollover } from './state.js';
+import { initState, getState, updateCleanDays, checkDayRollover } from './state.js';
 import {
   logQadaaPrayer,
   logOnTimePrayer,
   logInMosquePrayer,
   submitStudyHours,
-  logGhusl,
+  logTwaba,
   logQuran,
-  logExercise,
+  logWorkout,
   getMasturbationRelapseInfo,
   confirmMasturbationRelapse,
   getPornRelapseInfo,
@@ -37,7 +37,7 @@ function init() {
 
   // Check for day rollover
   checkDayRollover();
-  updateCleanHours();
+  updateCleanDays();
 
   // Render initial UI
   renderAll();
@@ -68,9 +68,9 @@ function setupEventListeners() {
   });
 
   // Good deeds buttons
-  $('#logGhusl')?.addEventListener('click', handleLogGhusl);
+  $('#logTwaba')?.addEventListener('click', handleLogTwaba);
   $('#logQuran')?.addEventListener('click', handleLogQuran);
-  $('#logExercise')?.addEventListener('click', handleLogExercise);
+  $('#logWorkout')?.addEventListener('click', handleLogWorkout);
 
   // Relapse buttons
   $('#logMasturbation')?.addEventListener('click', handleLogMasturbation);
@@ -89,7 +89,7 @@ function setupEventListeners() {
 function handleLogQadaa() {
   const success = logQadaaPrayer();
   if (success) {
-    animatePointChange(getState().customPoints.qadaa);
+    animatePointChange(10);
     renderAll();
   }
 }
@@ -97,7 +97,7 @@ function handleLogQadaa() {
 function handleLogOnTime() {
   const success = logOnTimePrayer();
   if (success) {
-    animatePointChange(getState().customPoints.onTime);
+    animatePointChange(20);
     renderAll();
   }
 }
@@ -105,7 +105,7 @@ function handleLogOnTime() {
 function handleLogInMosque() {
   const success = logInMosquePrayer();
   if (success) {
-    animatePointChange(getState().customPoints.inMosque);
+    animatePointChange(30);
     renderAll();
   }
 }
@@ -129,21 +129,27 @@ function handleSubmitStudy() {
 /**
  * Good deeds handlers
  */
-function handleLogGhusl() {
-  logGhusl();
-  animatePointChange(getState().customPoints.ghusl);
+function handleLogTwaba() {
+  const success = logTwaba();
+  if (success) {
+    animatePointChange(30);
+  }
   renderAll();
 }
 
 function handleLogQuran() {
-  logQuran();
-  animatePointChange(getState().customPoints.quran);
+  const success = logQuran();
+  if (success) {
+    animatePointChange(20);
+  }
   renderAll();
 }
 
-function handleLogExercise() {
-  logExercise();
-  animatePointChange(getState().customPoints.exercise);
+function handleLogWorkout() {
+  const success = logWorkout();
+  if (success) {
+    animatePointChange(40);
+  }
   renderAll();
 }
 
@@ -154,7 +160,7 @@ function handleLogMasturbation() {
   const { penalty, message } = getMasturbationRelapseInfo();
   showConfirmModal(message, () => {
     confirmMasturbationRelapse();
-    animatePointChange(-penalty);
+    animatePointChange(-80);
     renderAll();
   });
 }
@@ -163,7 +169,7 @@ function handleLogPorn() {
   const { penalty, message } = getPornRelapseInfo();
   showConfirmModal(message, () => {
     confirmPornRelapse();
-    animatePointChange(-penalty);
+    animatePointChange(-200);
     renderAll();
   });
 }
@@ -246,7 +252,7 @@ function handleReset() {
 
 /**
  * Background ticker for automatic updates
- * Runs every minute to check for day rollover and update clean hours
+ * Runs every minute to check for day rollover and update clean days
  */
 function startBackgroundTicker() {
   setInterval(() => {
@@ -257,8 +263,8 @@ function startBackgroundTicker() {
       showNotification('New day started! Daily stats reset.', 'info');
     }
 
-    const hoursAdded = updateCleanHours();
-    if (hoursAdded > 0) {
+    const daysAdded = updateCleanDays();
+    if (daysAdded > 0) {
       saveState(getState());
       renderAll();
     }
@@ -280,7 +286,7 @@ window.addEventListener('beforeunload', () => {
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden) {
     checkDayRollover();
-    updateCleanHours();
+    updateCleanDays();
     renderAll();
   }
 });

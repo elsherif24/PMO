@@ -196,6 +196,18 @@
     margin-top: var(--spacing-lg);
 }
 
+/* Detail Counts Styling */
+.detail-counts {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.detail-counts div {
+    margin: 0.25rem 0;
+    font-size: 0.8rem;
+}
+
 /* Scrollbar Styling for Modals */
 .activity-log::-webkit-scrollbar,
 .modal-body::-webkit-scrollbar {

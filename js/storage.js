@@ -114,7 +114,7 @@ function validateImportedState(state) {
   }
 
   // Check for required properties
-  const requiredProps = ['version', 'points', 'customPoints'];
+  const requiredProps = ['version', 'points'];
   for (const prop of requiredProps) {
     if (!(prop in state)) {
       return false;
@@ -137,15 +137,20 @@ function migrateState(oldState) {
   // Preserve core data
   newState.points = oldState.points || 0;
   newState.prayersLoggedToday = oldState.prayersLoggedToday || 0;
-  newState.lastCleanHourUpdate = oldState.lastCleanHourUpdate || Date.now();
+
+  // Migrate from lastCleanHourUpdate to lastCleanDayUpdate
+  if (oldState.lastCleanDayUpdate) {
+    newState.lastCleanDayUpdate = oldState.lastCleanDayUpdate;
+  } else if (oldState.lastCleanHourUpdate) {
+    // Convert old hour-based tracking to day-based
+    newState.lastCleanDayUpdate = getTodayISO();
+  } else {
+    newState.lastCleanDayUpdate = getTodayISO();
+  }
+
   newState.todayDate = oldState.todayDate || getTodayISO();
   newState.todayPoints = oldState.todayPoints || 0;
   newState.todayStudyHours = oldState.todayStudyHours || 0;
-
-  // Preserve custom points if they exist
-  if (oldState.customPoints) {
-    newState.customPoints = { ...newState.customPoints, ...oldState.customPoints };
-  }
 
   // Preserve category points if they exist
   if (oldState.categoryPoints) {
@@ -155,6 +160,15 @@ function migrateState(oldState) {
   // Preserve activity history if it exists
   if (oldState.activityHistory && Array.isArray(oldState.activityHistory)) {
     newState.activityHistory = oldState.activityHistory.slice(0, 50);
+  }
+
+  // Preserve counts if they exist, otherwise initialize
+  if (oldState.counts) {
+    newState.counts = { ...newState.counts, ...oldState.counts };
+    // Migrate cleanHours to cleanDays if needed
+    if (oldState.counts.cleanHours && !oldState.counts.cleanDays) {
+      newState.counts.cleanDays = Math.floor(oldState.counts.cleanHours / 24);
+    }
   }
 
   return newState;

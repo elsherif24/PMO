@@ -3,7 +3,7 @@
  * Handles all DOM updates and visual state rendering
  */
 
-import { getState, getCleanHours } from '../state.js';
+import { getState, getCleanDays } from '../state.js';
 import { getRankFromPoints, calculateRankProgress, formatNumber, $ } from '../utils.js';
 import { PRAYER_NAMES } from '../config.js';
 
@@ -17,6 +17,7 @@ export function renderAll() {
   renderStudyStatus();
   renderStats();
   updatePointDisplays();
+  renderOncePerDayButtons();
 }
 
 /**
@@ -122,12 +123,10 @@ export function renderStudyStatus() {
     studyStatus.style.color = 'var(--muted)';
   } else {
     const hours = state.todayStudyHours;
-    const status = hours < 2
-      ? `${hours}h logged (below 2h threshold: -${state.customPoints.studyPenalty}pts)`
-      : `${hours}h logged (+${Math.floor(hours * state.customPoints.studyPerHour)} points)`;
+    const status = `${hours}h logged (+${Math.floor(hours * 20)} points)`;
 
     studyStatus.textContent = status;
-    studyStatus.style.color = hours < 2 ? 'var(--yellow)' : 'var(--green)';
+    studyStatus.style.color = 'var(--green)';
   }
 }
 
@@ -137,7 +136,9 @@ export function renderStudyStatus() {
 export function renderStats() {
   const state = getState();
   const pointsToday = $('#pointsToday');
-  const cleanHoursValue = $('#cleanHoursValue');
+  const prayersToday = $('#prayersToday');
+  const studyToday = $('#studyToday');
+  const workoutsToday = $('#workoutsToday');
 
   if (pointsToday) {
     const sign = state.todayPoints >= 0 ? '+' : '';
@@ -145,10 +146,23 @@ export function renderStats() {
     pointsToday.style.color = state.todayPoints >= 0 ? 'var(--green)' : 'var(--red)';
   }
 
-  if (cleanHoursValue) {
-    const cleanHours = getCleanHours();
-    cleanHoursValue.textContent = cleanHours;
-    cleanHoursValue.style.color = cleanHours > 24 ? 'var(--green)' : 'var(--accent)';
+  if (prayersToday) {
+    prayersToday.textContent = `${state.prayersLoggedToday}/5`;
+    prayersToday.style.color = state.prayersLoggedToday >= 5 ? 'var(--green)' : 'var(--accent)';
+  }
+
+  if (studyToday) {
+    studyToday.textContent = state.todayStudyHours || 0;
+    studyToday.style.color = state.todayStudyHours > 0 ? 'var(--green)' : 'var(--muted)';
+  }
+
+  if (workoutsToday) {
+    const hasWorkedOut = state.activityHistory.some(a =>
+      a.description.includes('Workout') &&
+      new Date(a.timestamp).toDateString() === new Date().toDateString()
+    );
+    workoutsToday.textContent = hasWorkedOut ? '✓' : '✗';
+    workoutsToday.style.color = hasWorkedOut ? 'var(--green)' : 'var(--muted)';
   }
 }
 
@@ -156,18 +170,15 @@ export function renderStats() {
  * Updates all point display elements
  */
 export function updatePointDisplays() {
-  const state = getState();
-  const cp = state.customPoints;
-
   const pointDisplays = {
-    pointsQadaa: `+${cp.qadaa}`,
-    pointsOnTime: `+${cp.onTime}`,
-    pointsInMosque: `+${cp.inMosque}`,
-    pointsGhusl: `+${cp.ghusl}`,
-    pointsQuran: `+${cp.quran}`,
-    pointsExercise: `+${cp.exercise}`,
-    pointsMasturbation: `-${cp.exercise * 2 + cp.quran * 2 + cp.ghusl * 2}`,
-    pointsPorn: `-${(cp.exercise * 2 + cp.quran * 2 + cp.ghusl * 2) * 2}`,
+    pointsQadaa: `+10`,
+    pointsOnTime: `+20`,
+    pointsInMosque: `+30`,
+    pointsTwaba: `+30`,
+    pointsQuran: `+20`,
+    pointsWorkout: `+40`,
+    pointsMasturbation: `-80`,
+    pointsPorn: `-200`,
   };
 
   Object.entries(pointDisplays).forEach(([id, value]) => {
@@ -176,6 +187,67 @@ export function updatePointDisplays() {
       element.textContent = value;
     }
   });
+}
+
+/**
+ * Renders once-per-day button states (Twaba, Quran, Workout)
+ */
+export function renderOncePerDayButtons() {
+  const state = getState();
+  const today = new Date().toDateString();
+
+  // Check Twaba
+  const hasTwabaToday = state.activityHistory.some(a =>
+    a.description.includes('Twaba') &&
+    new Date(a.timestamp).toDateString() === today
+  );
+  updateButtonState('logTwaba', 'labelTwaba', 'pointsTwaba', hasTwabaToday);
+
+  // Check Quran
+  const hasQuranToday = state.activityHistory.some(a =>
+    a.description.includes('Quran') &&
+    new Date(a.timestamp).toDateString() === today
+  );
+  updateButtonState('logQuran', 'labelQuran', 'pointsQuran', hasQuranToday);
+
+  // Check Workout
+  const hasWorkoutToday = state.activityHistory.some(a =>
+    a.description.includes('Workout') &&
+    new Date(a.timestamp).toDateString() === today
+  );
+  updateButtonState('logWorkout', 'labelWorkout', 'pointsWorkout', hasWorkoutToday);
+}
+
+/**
+ * Updates button state to show completed or available
+ * @param {string} buttonId - Button element ID
+ * @param {string} labelId - Label element ID
+ * @param {string} pointsId - Points element ID
+ * @param {boolean} isComplete - Whether action is complete
+ */
+function updateButtonState(buttonId, labelId, pointsId, isComplete) {
+  const button = $(`#${buttonId}`);
+  const label = $(`#${labelId}`);
+  const points = $(`#${pointsId}`);
+
+  if (!button || !label || !points) return;
+
+  if (isComplete) {
+    button.disabled = true;
+    button.style.opacity = '0.5';
+    button.style.cursor = 'not-allowed';
+    label.textContent = 'Complete';
+    points.style.display = 'none';
+  } else {
+    button.disabled = false;
+    button.style.opacity = '1';
+    button.style.cursor = 'pointer';
+    // Restore original labels
+    if (buttonId === 'logTwaba') label.textContent = 'Twaba';
+    if (buttonId === 'logQuran') label.textContent = 'Quran';
+    if (buttonId === 'logWorkout') label.textContent = 'Workout';
+    points.style.display = '';
+  }
 }
 
 /**

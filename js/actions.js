@@ -7,7 +7,7 @@ import { PRAYER_NAMES } from './config.js';
 import {
   getState,
   addPointsToState,
-  resetCleanHours,
+  resetCleanDays,
   checkDayRollover,
 } from './state.js';
 import { saveState, clearStorage } from './storage.js';
@@ -27,11 +27,12 @@ export function logQadaaPrayer() {
   }
 
   const prayerName = PRAYER_NAMES[state.prayersLoggedToday];
-  addPointsToState(state.customPoints.qadaa, 'prayer', `${prayerName} Qadaa logged`);
+  addPointsToState(10, 'prayer', `${prayerName} Qadaa logged`);
   state.prayersLoggedToday++;
+  state.counts.qadaa++;
   saveState(state);
 
-  showNotification(`${prayerName} Qadaa logged (+${state.customPoints.qadaa} points)`, 'success');
+  showNotification(`${prayerName} Qadaa logged (+10 points)`, 'success');
   return true;
 }
 
@@ -48,11 +49,12 @@ export function logOnTimePrayer() {
   }
 
   const prayerName = PRAYER_NAMES[state.prayersLoggedToday];
-  addPointsToState(state.customPoints.onTime, 'prayer', `${prayerName} on time`);
+  addPointsToState(20, 'prayer', `${prayerName} on time`);
   state.prayersLoggedToday++;
+  state.counts.onTime++;
   saveState(state);
 
-  showNotification(`${prayerName} on time (+${state.customPoints.onTime} points)`, 'success');
+  showNotification(`${prayerName} on time (+20 points)`, 'success');
   return true;
 }
 
@@ -69,11 +71,12 @@ export function logInMosquePrayer() {
   }
 
   const prayerName = PRAYER_NAMES[state.prayersLoggedToday];
-  addPointsToState(state.customPoints.inMosque, 'prayer', `${prayerName} in mosque`);
+  addPointsToState(30, 'prayer', `${prayerName} in mosque`);
   state.prayersLoggedToday++;
+  state.counts.inMosque++;
   saveState(state);
 
-  showNotification(`${prayerName} in mosque (+${state.customPoints.inMosque} points)`, 'success');
+  showNotification(`${prayerName} in mosque (+30 points)`, 'success');
   return true;
 }
 
@@ -92,62 +95,92 @@ export function submitStudyHours(hours) {
   }
 
   const oldHours = state.todayStudyHours;
-  const oldPoints = oldHours < 2
-    ? -state.customPoints.studyPenalty
-    : Math.floor(oldHours * state.customPoints.studyPerHour);
+  const oldPoints = Math.floor(oldHours * 20);
 
-  const newPoints = parsedHours < 2
-    ? -state.customPoints.studyPenalty
-    : Math.floor(parsedHours * state.customPoints.studyPerHour);
+  const newPoints = Math.floor(parsedHours * 20);
 
   const pointDiff = newPoints - oldPoints;
 
   state.todayStudyHours = parsedHours;
+  state.counts.studyHours = parsedHours;
   addPointsToState(pointDiff, 'study', `Study updated: ${parsedHours}h`);
   saveState(state);
 
-  if (parsedHours < 2) {
-    showNotification(`Study updated: ${parsedHours}h (below threshold, penalty applied)`, 'warning');
-  } else {
-    showNotification(`Study updated: ${parsedHours}h (+${newPoints} points total)`, 'success');
-  }
+  showNotification(`Study updated: ${parsedHours}h (+${newPoints} points total)`, 'success');
 
   return true;
 }
 
 /**
- * Logs Ghusl performed
+ * Logs Twaba (Ghusl + Doaa) performed (once per day)
  * @returns {boolean} True if successful
  */
-export function logGhusl() {
+export function logTwaba() {
   const state = getState();
-  addPointsToState(state.customPoints.ghusl, 'good', 'Ghusl performed');
+
+  // Check if Twaba already logged today
+  const hasTwabaToday = state.activityHistory.some(a =>
+    a.description.includes('Twaba') &&
+    new Date(a.timestamp).toDateString() === new Date().toDateString()
+  );
+
+  if (hasTwabaToday) {
+    showNotification('Twaba already logged today!', 'info');
+    return false;
+  }
+
+  addPointsToState(30, 'good', 'Twaba performed');
   saveState(state);
-  showNotification(`Ghusl logged (+${state.customPoints.ghusl} points)`, 'success');
+  showNotification(`Twaba logged (+30 points)`, 'success');
   return true;
 }
 
 /**
- * Logs Quran reading
+ * Logs Quran reading (once per day)
  * @returns {boolean} True if successful
  */
 export function logQuran() {
   const state = getState();
-  addPointsToState(state.customPoints.quran, 'good', 'Quran reading');
+
+  // Check if Quran already logged today
+  const hasQuranToday = state.activityHistory.some(a =>
+    a.description.includes('Quran') &&
+    new Date(a.timestamp).toDateString() === new Date().toDateString()
+  );
+
+  if (hasQuranToday) {
+    showNotification('Quran reading already logged today!', 'info');
+    return false;
+  }
+
+  addPointsToState(20, 'good', 'Quran reading');
   saveState(state);
-  showNotification(`Quran reading logged (+${state.customPoints.quran} points)`, 'success');
+  showNotification(`Quran reading logged (+20 points)`, 'success');
   return true;
 }
 
 /**
- * Logs exercise completed
+ * Logs workout completed (once per day)
  * @returns {boolean} True if successful
  */
-export function logExercise() {
+export function logWorkout() {
   const state = getState();
-  addPointsToState(state.customPoints.exercise, 'good', 'Exercise completed');
+
+  // Check if workout already logged today
+  const hasWorkedOutToday = state.activityHistory.some(a =>
+    a.description.includes('Workout') &&
+    new Date(a.timestamp).toDateString() === new Date().toDateString()
+  );
+
+  if (hasWorkedOutToday) {
+    showNotification('Workout already logged today!', 'info');
+    return false;
+  }
+
+  addPointsToState(40, 'good', 'Workout completed');
+  state.counts.workouts++;
   saveState(state);
-  showNotification(`Exercise logged (+${state.customPoints.exercise} points)`, 'success');
+  showNotification(`Workout logged (+40 points)`, 'success');
   return true;
 }
 
@@ -156,8 +189,7 @@ export function logExercise() {
  * @returns {Object} Penalty amount and confirmation message
  */
 export function getMasturbationRelapseInfo() {
-  const state = getState();
-  const penalty = (state.customPoints.exercise + state.customPoints.quran + state.customPoints.ghusl) * 2;
+  const penalty = 80;
   return {
     penalty,
     message: `Log masturbation relapse? This will deduct ${penalty} points.`,
@@ -170,9 +202,10 @@ export function getMasturbationRelapseInfo() {
  */
 export function confirmMasturbationRelapse() {
   const state = getState();
-  const penalty = (state.customPoints.exercise + state.customPoints.quran + state.customPoints.ghusl) * 2;
+  const penalty = 80;
   addPointsToState(-penalty, 'relapse', 'Masturbation relapse');
-  resetCleanHours();
+  state.counts.masturbation++;
+  resetCleanDays();
   saveState(state);
   showNotification(`Masturbation relapse logged (-${penalty} points)`, 'warning');
   return true;
@@ -183,8 +216,7 @@ export function confirmMasturbationRelapse() {
  * @returns {Object} Penalty amount and confirmation message
  */
 export function getPornRelapseInfo() {
-  const state = getState();
-  const penalty = (state.customPoints.exercise + state.customPoints.quran + state.customPoints.ghusl) * 4;
+  const penalty = 200;
   return {
     penalty,
     message: `Log porn relapse? This will deduct ${penalty} points.`,
@@ -197,35 +229,12 @@ export function getPornRelapseInfo() {
  */
 export function confirmPornRelapse() {
   const state = getState();
-  const penalty = (state.customPoints.exercise + state.customPoints.quran + state.customPoints.ghusl) * 4;
+  const penalty = 200;
   addPointsToState(-penalty, 'relapse', 'Porn relapse');
-  resetCleanHours();
+  state.counts.porn++;
+  resetCleanDays();
   saveState(state);
-  showNotification(`Porn relapse logged (-${penalty} points). Immediate Ghusl gives points back!`, 'warning');
-  return true;
-}
-
-/**
- * Updates custom point values
- * @param {Object} customPoints - New custom point values
- * @returns {boolean} True if successful
- */
-export function updateCustomPoints(customPoints) {
-  const state = getState();
-  state.customPoints = { ...state.customPoints, ...customPoints };
-  saveState(state);
-  return true;
-}
-
-/**
- * Resets custom points to default values
- * @param {Object} defaultPoints - Default point values
- * @returns {boolean} True if successful
- */
-export function resetCustomPoints(defaultPoints) {
-  const state = getState();
-  state.customPoints = { ...defaultPoints };
-  saveState(state);
+  showNotification(`Porn relapse logged (-${penalty} points). Immediate Twaba gives points back!`, 'warning');
   return true;
 }
 

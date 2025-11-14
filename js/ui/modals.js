@@ -5,10 +5,9 @@
 
 import { getState, updateState } from '../state.js';
 import { saveState } from '../storage.js';
-import { DEFAULT_POINTS, RANKS, CATEGORY_ICONS } from '../config.js';
+import { RANKS, CATEGORY_ICONS } from '../config.js';
 import { formatTime, formatNumber, $ } from '../utils.js';
 import { showNotification } from './notifications.js';
-import { updatePointDisplays } from './render.js';
 
 // Store pending confirmation action
 let pendingConfirmCallback = null;
@@ -35,85 +34,7 @@ export function closeModal(modalId) {
   }
 }
 
-/**
- * Opens the settings modal
- */
-export function openSettingsModal() {
-  const state = getState();
-  const cp = state.customPoints;
 
-  // Populate settings inputs
-  const inputs = {
-    settingQadaa: cp.qadaa,
-    settingOnTime: cp.onTime,
-    settingInMosque: cp.inMosque,
-    settingGhusl: cp.ghusl,
-    settingQuran: cp.quran,
-    settingExercise: cp.exercise,
-    settingStudyPerHour: cp.studyPerHour,
-    settingStudyPenalty: cp.studyPenalty,
-  };
-
-  Object.entries(inputs).forEach(([id, value]) => {
-    const input = $(`#${id}`);
-    if (input) input.value = value;
-  });
-
-  updateNegativePointsPreview();
-  openModal('settingsModal');
-}
-
-/**
- * Updates the negative points preview in settings
- */
-export function updateNegativePointsPreview() {
-  const exercise = parseInt($('#settingExercise')?.value) || 10;
-  const quran = parseInt($('#settingQuran')?.value) || 15;
-  const ghusl = parseInt($('#settingGhusl')?.value) || 25;
-  const basePenalty = (exercise + quran + ghusl) * 2;
-
-  const negMasturbation = $('#negMasturbation');
-  const negPorn = $('#negPorn');
-
-  if (negMasturbation) negMasturbation.textContent = `-${basePenalty}`;
-  if (negPorn) negPorn.textContent = `-${basePenalty * 2}`;
-}
-
-/**
- * Saves settings from the settings modal
- */
-export function saveSettings() {
-  const state = getState();
-
-  const newPoints = {
-    qadaa: parseInt($('#settingQadaa')?.value) || DEFAULT_POINTS.qadaa,
-    onTime: parseInt($('#settingOnTime')?.value) || DEFAULT_POINTS.onTime,
-    inMosque: parseInt($('#settingInMosque')?.value) || DEFAULT_POINTS.inMosque,
-    ghusl: parseInt($('#settingGhusl')?.value) || DEFAULT_POINTS.ghusl,
-    quran: parseInt($('#settingQuran')?.value) || DEFAULT_POINTS.quran,
-    exercise: parseInt($('#settingExercise')?.value) || DEFAULT_POINTS.exercise,
-    studyPerHour: parseInt($('#settingStudyPerHour')?.value) || DEFAULT_POINTS.studyPerHour,
-    studyPenalty: parseInt($('#settingStudyPenalty')?.value) || DEFAULT_POINTS.studyPenalty,
-  };
-
-  state.customPoints = newPoints;
-  saveState(state);
-  updatePointDisplays();
-  closeModal('settingsModal');
-  showNotification('Settings saved successfully!', 'success');
-}
-
-/**
- * Resets settings to default values
- */
-export function resetSettings() {
-  const state = getState();
-  state.customPoints = { ...DEFAULT_POINTS };
-  saveState(state);
-  openSettingsModal();
-  updatePointDisplays();
-  showNotification('Settings reset to defaults', 'info');
-}
 
 /**
  * Opens the timeline modal and renders ranks
@@ -197,13 +118,27 @@ export function openDetailsModal() {
 function renderDetails() {
   const state = getState();
 
+  // Calculate statistics for each category
+  // Praying = prayer points + quran + twaba
+  const quranPoints = state.activityHistory.filter(a => a.description.includes('Quran')).reduce((sum, a) => sum + a.points, 0);
+  const twabaPoints = state.activityHistory.filter(a => a.description.includes('Twaba')).reduce((sum, a) => sum + a.points, 0);
+  const prayingPoints = state.categoryPoints.prayer + quranPoints + twabaPoints;
+
+  // Study = study points only
+  const studyPoints = state.categoryPoints.study;
+
+  // Workout = workout points only
+  const workoutPoints = state.activityHistory.filter(a => a.description.includes('Workout')).reduce((sum, a) => sum + a.points, 0);
+
+  // PMO = clean hours points - porn and masturbation penalties
+  const pmoPoints = state.categoryPoints.clean + state.categoryPoints.relapse;
+
   // Update category totals
   const categoryElements = {
-    detailPrayer: state.categoryPoints.prayer,
-    detailStudy: state.categoryPoints.study,
-    detailGood: state.categoryPoints.good,
-    detailRelapse: state.categoryPoints.relapse,
-    detailClean: state.categoryPoints.clean,
+    detailPraying: prayingPoints,
+    detailStudy: studyPoints,
+    detailWorkout: workoutPoints,
+    detailPMO: pmoPoints,
   };
 
   Object.entries(categoryElements).forEach(([id, value]) => {
@@ -213,63 +148,40 @@ function renderDetails() {
     }
   });
 
-  // Render activity log
-  renderActivityLog();
-}
+  // Update counts from state.counts
+  const counts = state.counts || {
+    qadaa: 0,
+    onTime: 0,
+    inMosque: 0,
+    studyHours: 0,
+    workouts: 0,
+    cleanHours: 0,
+    porn: 0,
+    masturbation: 0,
+  };
 
-/**
- * Renders the activity log
- */
-function renderActivityLog() {
-  const state = getState();
-  const activityLog = $('#activityLog');
+  const totalCleanDays = counts.cleanDays || 0;
 
-  if (!activityLog) return;
+  const countElements = {
+    countQadaa: counts.qadaa,
+    countOnTime: counts.onTime,
+    countInMosque: counts.inMosque,
+    countStudyHours: counts.studyHours,
+    countWorkouts: counts.workouts,
+    countCleanDays: totalCleanDays,
+    countPorn: counts.porn,
+    countMasturbation: counts.masturbation,
+  };
 
-  activityLog.innerHTML = '';
-
-  if (state.activityHistory.length === 0) {
-    activityLog.innerHTML = '<div class="muted small">No activity recorded yet.</div>';
-    return;
-  }
-
-  state.activityHistory.forEach(activity => {
-    const item = document.createElement('div');
-    item.className = 'activity-item';
-
-    const info = document.createElement('div');
-    info.className = 'activity-info';
-
-    const icon = document.createElement('div');
-    icon.className = 'activity-icon';
-    icon.textContent = CATEGORY_ICONS[activity.category] || '📝';
-
-    const textWrapper = document.createElement('div');
-
-    const text = document.createElement('div');
-    text.className = 'activity-text';
-    text.textContent = activity.description;
-
-    const time = document.createElement('div');
-    time.className = 'activity-time';
-    time.textContent = formatTime(activity.timestamp);
-
-    textWrapper.appendChild(text);
-    textWrapper.appendChild(time);
-
-    info.appendChild(icon);
-    info.appendChild(textWrapper);
-
-    const pointsEl = document.createElement('div');
-    pointsEl.className = `activity-points ${activity.points >= 0 ? 'positive' : 'negative'}`;
-    pointsEl.textContent = activity.points >= 0 ? `+${activity.points}` : activity.points;
-
-    item.appendChild(info);
-    item.appendChild(pointsEl);
-
-    activityLog.appendChild(item);
+  Object.entries(countElements).forEach(([id, value]) => {
+    const element = $(`#${id}`);
+    if (element) {
+      element.textContent = typeof value === 'number' ? value.toFixed(1).replace('.0', '') : value;
+    }
   });
 }
+
+
 
 /**
  * Shows a confirmation modal
@@ -309,21 +221,6 @@ export function cancelConfirm() {
  * Setup modal event listeners
  */
 export function setupModalListeners() {
-  // Settings modal
-  $('#settingsBtn')?.addEventListener('click', openSettingsModal);
-  $('#settingsClose')?.addEventListener('click', () => closeModal('settingsModal'));
-  $('#settingsSave')?.addEventListener('click', saveSettings);
-  $('#settingsReset')?.addEventListener('click', resetSettings);
-  $('#settingsModal')?.addEventListener('click', (e) => {
-    if (e.target.id === 'settingsModal') closeModal('settingsModal');
-  });
-
-  // Update negative points preview on input change
-  const settingInputs = ['#settingExercise', '#settingQuran', '#settingGhusl'];
-  settingInputs.forEach(selector => {
-    $(selector)?.addEventListener('input', updateNegativePointsPreview);
-  });
-
   // Timeline modal
   $('#timelineBtn')?.addEventListener('click', openTimelineModal);
   $('#timelineClose')?.addEventListener('click', () => closeModal('timelineModal'));
