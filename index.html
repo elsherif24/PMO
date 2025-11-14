@@ -4,19 +4,33 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="dark" />
-  <meta name="description" content="Local-first points-based recovery tracker. Build good habits, earn points, rank up." />
-  <title>Recovery Tracker — Points & Ranks</title>
-  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-  <link rel="icon" type="image/x-icon" href="./favicon.ico" />
+  <meta name="description" content="Lock In - Winter Arc tracking system. Build discipline, earn points, rank up." />
+  <title>Lock In — Winter Arc Progress Tracker</title>
+  <link rel="icon" type="image/svg+xml" href="./logo.svg" />
+  <link rel="icon" type="image/png" href="./logo.png" />
+  <link rel="icon" type="image/x-icon" href="./logo.ico" />
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
   <header class="app-header">
     <div class="title-area">
-      <h1 class="app-title">Recovery Tracker</h1>
+      <img src="./logo.svg" alt="Lock In Logo" class="app-logo" />
+      <div>
+        <h1 class="app-title">Lock In</h1>
+        <div class="app-subtitle">Winter Arc</div>
+      </div>
       <div id="rankBadge" class="rank-badge" aria-live="polite">Iron III</div>
     </div>
     <div class="header-actions">
+      <button id="timelineBtn" class="btn btn-icon" title="View Ranks Timeline">
+        <span class="icon">📊</span>
+      </button>
+      <button id="detailsBtn" class="btn btn-icon" title="View Category Details">
+        <span class="icon">📋</span>
+      </button>
+      <button id="settingsBtn" class="btn btn-icon" title="Settings">
+        <span class="icon">⚙️</span>
+      </button>
       <button id="exportBtn" class="btn" title="Export JSON">Export</button>
       <button id="importBtn" class="btn" title="Import JSON">Import</button>
       <input id="importFile" type="file" accept="application/json" hidden />
@@ -29,7 +43,7 @@
     <section class="card rank" aria-labelledby="rankHeading">
       <div class="card-header">
         <h2 id="rankHeading">Current Rank</h2>
-        <div class="muted small">Points-based progression</div>
+        <div class="muted small">Track your winter arc progression</div>
       </div>
       <div class="rank-body">
         <img id="rankImageLarge" class="rank-img-lg" src="ranks/IronIII.png" alt="Iron III" />
@@ -62,20 +76,20 @@
         </div>
       </div>
       <div class="action-grid">
-        <button class="action-btn btn-neutral" id="logQadaa" title="+20 points">
+        <button class="action-btn btn-neutral" id="logQadaa" title="Log Qadaa prayer" data-category="prayer">
           <span class="action-icon">🔄</span>
           <span class="action-label">Qadaa</span>
-          <span class="action-points">+20</span>
+          <span class="action-points" id="pointsQadaa">+20</span>
         </button>
-        <button class="action-btn btn-green-subtle" id="logOnTime" title="+25 points">
+        <button class="action-btn btn-green-subtle" id="logOnTime" title="Log on-time prayer" data-category="prayer">
           <span class="action-icon">✅</span>
           <span class="action-label">On Time</span>
-          <span class="action-points">+25</span>
+          <span class="action-points" id="pointsOnTime">+25</span>
         </button>
-        <button class="action-btn btn-accent" id="logInMosque" title="+35 points">
+        <button class="action-btn btn-accent" id="logInMosque" title="Log mosque prayer" data-category="prayer">
           <span class="action-icon">🕌</span>
           <span class="action-label">In Mosque</span>
-          <span class="action-points">+35</span>
+          <span class="action-points" id="pointsInMosque">+35</span>
         </button>
       </div>
     </section>
@@ -87,7 +101,7 @@
         <div class="muted small">Daily requirement: 2+ hours</div>
       </div>
       <div class="study-body">
-        <p class="muted small">Log your total study hours for today (editable throughout the day). Below 2 hours = -20 points penalty. At or above 2 hours = +8 points per hour.</p>
+        <p class="muted small">Log your total study hours for today (editable throughout the day). Below 2 hours = penalty. At or above 2 hours = points per hour.</p>
         <div class="study-input-row">
           <label for="studyHours">Hours studied today:</label>
           <input type="number" id="studyHours" min="0" max="24" step="0.5" placeholder="0.0" />
@@ -104,33 +118,33 @@
       </div>
       <h3 class="section-subtitle">Good Deeds</h3>
       <div class="action-grid">
-        <button class="action-btn btn-accent" id="logGhusl" title="+25 points">
+        <button class="action-btn btn-accent" id="logGhusl" title="Log Ghusl" data-category="good">
           <span class="action-icon">🚿</span>
           <span class="action-label">Ghusl</span>
-          <span class="action-points">+25</span>
+          <span class="action-points" id="pointsGhusl">+25</span>
         </button>
-        <button class="action-btn btn-green-subtle" id="logQuran" title="+15 points">
+        <button class="action-btn btn-green-subtle" id="logQuran" title="Log Quran reading" data-category="good">
           <span class="action-icon">📖</span>
           <span class="action-label">Quran</span>
-          <span class="action-points">+15</span>
+          <span class="action-points" id="pointsQuran">+15</span>
         </button>
-        <button class="action-btn btn-green-subtle" id="logExercise" title="+10 points">
+        <button class="action-btn btn-green-subtle" id="logExercise" title="Log exercise" data-category="good">
           <span class="action-icon">💪</span>
           <span class="action-label">Exercise</span>
-          <span class="action-points">+10</span>
+          <span class="action-points" id="pointsExercise">+10</span>
         </button>
       </div>
       <h3 class="section-subtitle">Relapses (if needed)</h3>
       <div class="action-grid relapse-grid">
-        <button class="action-btn btn-yellow-subtle" id="logMasturbation" title="-70 points">
+        <button class="action-btn btn-yellow-subtle" id="logMasturbation" title="Log relapse" data-category="relapse">
           <span class="action-icon">⚠️</span>
           <span class="action-label">Masturbation</span>
-          <span class="action-points">-70</span>
+          <span class="action-points" id="pointsMasturbation">-70</span>
         </button>
-        <button class="action-btn btn-red-subtle" id="logPorn" title="-140 points">
+        <button class="action-btn btn-red-subtle" id="logPorn" title="Log relapse" data-category="relapse">
           <span class="action-icon">🚫</span>
           <span class="action-label">Porn</span>
-          <span class="action-points">-140</span>
+          <span class="action-points" id="pointsPorn">-140</span>
         </button>
       </div>
     </section>
@@ -145,9 +159,171 @@
           <div class="stat-label">Points Today</div>
           <div class="stat-value" id="pointsToday">-100</div>
         </div>
+        <div class="stat-item">
+          <div class="stat-label">Clean Hours</div>
+          <div class="stat-value" id="cleanHoursValue">0</div>
+        </div>
       </div>
     </section>
   </main>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h3 id="settingsTitle">⚙️ Settings - Custom Points System</h3>
+        <button id="settingsClose" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="muted small">Customize the points for positive actions. Negative action points are automatically calculated as -2x the positive values and displayed as read-only.</p>
+
+        <div class="settings-section">
+          <h4 class="settings-heading">Prayer Actions (Positive Points)</h4>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label for="settingQadaa">Qadaa Prayer</label>
+              <input type="number" id="settingQadaa" class="setting-input" min="1" max="200" value="20" />
+            </div>
+            <div class="setting-item">
+              <label for="settingOnTime">On Time Prayer</label>
+              <input type="number" id="settingOnTime" class="setting-input" min="1" max="200" value="25" />
+            </div>
+            <div class="setting-item">
+              <label for="settingInMosque">In Mosque Prayer</label>
+              <input type="number" id="settingInMosque" class="setting-input" min="1" max="200" value="35" />
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h4 class="settings-heading">Good Deeds (Positive Points)</h4>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label for="settingGhusl">Ghusl</label>
+              <input type="number" id="settingGhusl" class="setting-input" min="1" max="200" value="25" />
+            </div>
+            <div class="setting-item">
+              <label for="settingQuran">Quran Reading</label>
+              <input type="number" id="settingQuran" class="setting-input" min="1" max="200" value="15" />
+            </div>
+            <div class="setting-item">
+              <label for="settingExercise">Exercise</label>
+              <input type="number" id="settingExercise" class="setting-input" min="1" max="200" value="10" />
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h4 class="settings-heading">Study Points</h4>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <label for="settingStudyPerHour">Points Per Hour (≥2h)</label>
+              <input type="number" id="settingStudyPerHour" class="setting-input" min="1" max="100" value="8" />
+            </div>
+            <div class="setting-item">
+              <label for="settingStudyPenalty">Penalty Below 2h</label>
+              <input type="number" id="settingStudyPenalty" class="setting-input" min="1" max="200" value="20" />
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section negative-section">
+          <h4 class="settings-heading">Negative Actions (Auto-Generated - Read Only)</h4>
+          <p class="muted small">These are calculated as -2x the base positive points. Adjust positive points to change these.</p>
+          <div class="settings-grid">
+            <div class="setting-item readonly">
+              <label>Masturbation</label>
+              <div class="readonly-value" id="negMasturbation">-70</div>
+            </div>
+            <div class="setting-item readonly">
+              <label>Porn</label>
+              <div class="readonly-value" id="negPorn">-140</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="settingsReset" class="btn">Reset to Defaults</button>
+        <button id="settingsSave" class="btn btn-accent">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline Modal -->
+  <div id="timelineModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="timelineTitle">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h3 id="timelineTitle">📊 Ranks Timeline - Your Winter Arc Journey</h3>
+        <button id="timelineClose" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="timelineContainer" class="timeline-container">
+          <!-- Timeline will be generated dynamically -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="timelineCloseBtn" class="btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Details Modal -->
+  <div id="detailsModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="detailsTitle">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h3 id="detailsTitle">📋 Category Details - Point History</h3>
+        <button id="detailsClose" class="icon-btn" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="details-summary">
+          <div class="detail-card">
+            <div class="detail-icon">🕌</div>
+            <div class="detail-content">
+              <div class="detail-label">Prayer Points</div>
+              <div class="detail-value" id="detailPrayer">0</div>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">📚</div>
+            <div class="detail-content">
+              <div class="detail-label">Study Points</div>
+              <div class="detail-value" id="detailStudy">0</div>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">✨</div>
+            <div class="detail-content">
+              <div class="detail-label">Good Deeds</div>
+              <div class="detail-value" id="detailGood">0</div>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">⚠️</div>
+            <div class="detail-content">
+              <div class="detail-label">Relapse Points</div>
+              <div class="detail-value negative" id="detailRelapse">0</div>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">⏰</div>
+            <div class="detail-content">
+              <div class="detail-label">Clean Hours</div>
+              <div class="detail-value" id="detailClean">0</div>
+            </div>
+          </div>
+        </div>
+        <div class="details-history">
+          <h4 class="section-subtitle">Recent Activity</h4>
+          <div id="activityLog" class="activity-log">
+            <div class="muted small">No activity recorded yet.</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="detailsCloseBtn" class="btn">Close</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Confirmation Modal -->
   <div id="confirmModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
