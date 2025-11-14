@@ -1,0 +1,228 @@
+/*
+  Card Components
+  Card containers and card-based layouts
+*/
+
+/* Base Card */
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-3xl);
+    padding: var(--spacing-lg);
+}
+
+/* Card Header */
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+.card-header h2 {
+    margin-bottom: 0;
+}
+
+/* Container Layout */
+.container {
+    width: min(980px, 92vw);
+    margin: var(--spacing-xl) auto 3rem;
+    display: grid;
+    gap: var(--spacing-lg);
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--spacing-md);
+}
+
+/* Stat Item Card */
+.stat-item {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-md);
+    text-align: center;
+}
+
+.stat-label {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-bottom: 0.35rem;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Detail Card */
+.detail-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.detail-icon {
+    font-size: 1.75rem;
+    line-height: 1;
+}
+
+.detail-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.detail-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+}
+
+.detail-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+}
+
+.detail-value.negative {
+    color: var(--red);
+}
+
+/* Details Summary Grid */
+.details-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-2xl);
+}
+
+/* Action Grid */
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+}
+
+.relapse-grid {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* Activity Log */
+.activity-log {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.activity-item {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 0.65rem 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.activity-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.activity-text {
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.activity-time {
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+
+.activity-points {
+    font-size: 0.9rem;
+    font-weight: 650;
+    padding: 0.2rem 0.45rem;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.05);
+    font-variant-numeric: tabular-nums;
+}
+
+.activity-points.positive {
+    color: #86efac;
+    background: rgba(34, 197, 94, 0.15);
+}
+
+.activity-points.negative {
+    color: #fca5a5;
+    background: rgba(239, 68, 68, 0.15);
+}
+
+/* Section Subtitle */
+.section-subtitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin: var(--spacing-lg) 0 var(--spacing-sm);
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.section-subtitle:first-of-type {
+    margin-top: var(--spacing-sm);
+}
+
+/* Responsive Card Layouts */
+@media (max-width: 700px) {
+    .action-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 500px) {
+    .container {
+        width: 95vw;
+        margin-top: var(--spacing-lg);
+    }
+
+    .card {
+        padding: 0.85rem;
+    }
+
+    .action-grid {
+        grid-template-columns: 1fr;
+        gap: 0.6rem;
+    }
+
+    .relapse-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .details-summary {
+        grid-template-columns: 1fr;
+    }
+}

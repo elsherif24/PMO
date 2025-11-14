@@ -1,0 +1,62 @@
+/*
+  Lock In — Winter Arc Progress Tracker
+  Main CSS Entry Point
+
+  This file imports all modular CSS files in the correct order:
+  1. Base - Variables, reset, and typography
+  2. Components - Reusable UI components
+  3. Sections - Page-specific sections
+  4. Utilities - Helper classes and animations
+*/
+
+/* ============================================================================
+   BASE STYLES
+   ============================================================================ */
+
+/* Design tokens and CSS variables */
+@import url('./base/variables.css');
+
+/* CSS reset and normalization */
+@import url('./base/reset.css');
+
+/* Typography styles */
+@import url('./base/typography.css');
+
+/* ============================================================================
+   COMPONENTS
+   ============================================================================ */
+
+/* Button components and variants */
+@import url('./components/buttons.css');
+
+/* Card layouts and containers */
+@import url('./components/cards.css');
+
+/* Form elements and inputs */
+@import url('./components/forms.css');
+
+/* Modal dialogs and overlays */
+@import url('./components/modals.css');
+
+/* ============================================================================
+   SECTIONS
+   ============================================================================ */
+
+/* Header and navigation */
+@import url('./sections/header.css');
+
+/* Rank display section */
+@import url('./sections/rank.css');
+
+/* Prayer and study sections */
+@import url('./sections/prayer.css');
+
+/* ============================================================================
+   UTILITIES
+   ============================================================================ */
+
+/* Animations and transitions */
+@import url('./utilities/animations.css');
+
+/* Accessibility and a11y utilities */
+@import url('./utilities/accessibility.css');

@@ -1,0 +1,90 @@
+/*
+  CSS Reset and Base Styles
+  Normalize browser defaults and set foundational styles
+*/
+
+/* Box Sizing Reset */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Remove Default Margins */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+/* HTML & Body */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-family);
+    line-height: var(--line-height);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Improved Text Rendering */
+body {
+    text-rendering: optimizeLegibility;
+}
+
+/* Image Defaults */
+img,
+picture,
+video,
+canvas,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+/* Form Elements */
+input,
+button,
+textarea,
+select {
+    font: inherit;
+    color: inherit;
+}
+
+/* Remove Button Styles */
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+/* Remove List Styles */
+ul,
+ol {
+    list-style: none;
+}
+
+/* Prevent Text Overflow */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    overflow-wrap: break-word;
+}
+
+/* Remove Link Underlines */
+a {
+    text-decoration: none;
+    color: inherit;
+}

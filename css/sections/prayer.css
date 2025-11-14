@@ -1,0 +1,37 @@
+/*
+  Prayer & Study Section Styles
+  Prayer tracking and study hours logging sections
+*/
+
+/* Prayer Debt Counter */
+.prayer-debt {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem var(--spacing-sm);
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.prayer-debt strong {
+    color: var(--accent);
+    font-size: 1.1rem;
+}
+
+/* Study Section Container */
+.study-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+/* Prayer Section Styling */
+.salah {
+    /* Additional prayer-specific card styles can go here */
+}
+
+/* Study Section Styling */
+.study {
+    /* Additional study-specific card styles can go here */
+}

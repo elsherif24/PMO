@@ -6,12 +6,18 @@
   <meta name="color-scheme" content="dark" />
   <meta name="description" content="Lock In - Winter Arc tracking system. Build discipline, earn points, rank up." />
   <title>Lock In — Winter Arc Progress Tracker</title>
+
+  <!-- Favicons -->
   <link rel="icon" type="image/svg+xml" href="./logo.svg" />
   <link rel="icon" type="image/png" href="./logo.png" />
   <link rel="icon" type="image/x-icon" href="./logo.ico" />
-  <link rel="stylesheet" href="./style.css" />
+
+  <!-- Modular CSS -->
+  <link rel="stylesheet" href="./css/main.css" />
 </head>
+
 <body>
+  <!-- Header -->
   <header class="app-header">
     <div class="title-area">
       <img src="./logo.svg" alt="Lock In Logo" class="app-logo" />
@@ -21,32 +27,35 @@
       </div>
       <div id="rankBadge" class="rank-badge" aria-live="polite">Iron III</div>
     </div>
+
     <div class="header-actions">
-      <button id="timelineBtn" class="btn btn-icon" title="View Ranks Timeline">
+      <button id="timelineBtn" class="btn btn-icon" title="View Ranks Timeline" aria-label="View Ranks Timeline">
         <span class="icon">📊</span>
       </button>
-      <button id="detailsBtn" class="btn btn-icon" title="View Category Details">
+      <button id="detailsBtn" class="btn btn-icon" title="View Category Details" aria-label="View Category Details">
         <span class="icon">📋</span>
       </button>
-      <button id="settingsBtn" class="btn btn-icon" title="Settings">
+      <button id="settingsBtn" class="btn btn-icon" title="Settings" aria-label="Settings">
         <span class="icon">⚙️</span>
       </button>
       <button id="exportBtn" class="btn" title="Export JSON">Export</button>
       <button id="importBtn" class="btn" title="Import JSON">Import</button>
-      <input id="importFile" type="file" accept="application/json" hidden />
+      <input id="importFile" type="file" accept="application/json" hidden aria-hidden="true" />
       <button id="resetBtn" class="btn btn-danger" title="Reset all data">Reset</button>
     </div>
   </header>
 
+  <!-- Main Content -->
   <main class="container">
-    <!-- Rank Display -->
+
+    <!-- Rank Display Section -->
     <section class="card rank" aria-labelledby="rankHeading">
       <div class="card-header">
         <h2 id="rankHeading">Current Rank</h2>
         <div class="muted small">Track your winter arc progression</div>
       </div>
       <div class="rank-body">
-        <img id="rankImageLarge" class="rank-img-lg" src="ranks/IronIII.png" alt="Iron III" />
+        <img id="rankImageLarge" class="rank-img-lg" src="./images/ranks/IronIII.png" alt="Iron III" />
         <div class="rank-labels">
           <div id="rankLabel" class="rank-title">Iron III</div>
           <div class="points-display">
@@ -59,14 +68,14 @@
         </div>
       </div>
       <div class="progress-row">
-        <div class="progress-bar" aria-hidden="true">
+        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
           <div class="progress" id="progressBar" style="width:0%"></div>
         </div>
-        <div class="progress-text" id="progressText">0%</div>
+        <div class="progress-text" id="progressText" aria-hidden="true">0%</div>
       </div>
     </section>
 
-    <!-- Prayer Tracking -->
+    <!-- Prayer Tracking Section -->
     <section class="card salah" aria-labelledby="salahHeading">
       <div class="card-header">
         <h2 id="salahHeading">Salah (Prayer)</h2>
@@ -77,24 +86,24 @@
       </div>
       <div class="action-grid">
         <button class="action-btn btn-neutral" id="logQadaa" title="Log Qadaa prayer" data-category="prayer">
-          <span class="action-icon">🔄</span>
+          <span class="action-icon" aria-hidden="true">🔄</span>
           <span class="action-label">Qadaa</span>
           <span class="action-points" id="pointsQadaa">+20</span>
         </button>
         <button class="action-btn btn-green-subtle" id="logOnTime" title="Log on-time prayer" data-category="prayer">
-          <span class="action-icon">✅</span>
+          <span class="action-icon" aria-hidden="true">✅</span>
           <span class="action-label">On Time</span>
           <span class="action-points" id="pointsOnTime">+25</span>
         </button>
         <button class="action-btn btn-accent" id="logInMosque" title="Log mosque prayer" data-category="prayer">
-          <span class="action-icon">🕌</span>
+          <span class="action-icon" aria-hidden="true">🕌</span>
           <span class="action-label">In Mosque</span>
           <span class="action-points" id="pointsInMosque">+35</span>
         </button>
       </div>
     </section>
 
-    <!-- Study Hours -->
+    <!-- Study Hours Section -->
     <section class="card study" aria-labelledby="studyHeading">
       <div class="card-header">
         <h2 id="studyHeading">Study Hours</h2>
@@ -104,52 +113,54 @@
         <p class="muted small">Log your total study hours for today (editable throughout the day). Below 2 hours = penalty. At or above 2 hours = points per hour.</p>
         <div class="study-input-row">
           <label for="studyHours">Hours studied today:</label>
-          <input type="number" id="studyHours" min="0" max="24" step="0.5" placeholder="0.0" />
+          <input type="number" id="studyHours" min="0" max="24" step="0.5" placeholder="0.0" aria-describedby="studyStatus" />
           <button class="btn" id="submitStudy">Submit</button>
         </div>
-        <div class="muted small" id="studyStatus">Not logged today</div>
+        <div class="muted small" id="studyStatus" role="status">Not logged today</div>
       </div>
     </section>
 
-    <!-- Good Deeds & Relapses -->
+    <!-- Good Deeds & Relapses Section -->
     <section class="card actions" aria-labelledby="actionsHeading">
       <div class="card-header">
         <h2 id="actionsHeading">Actions</h2>
       </div>
+
       <h3 class="section-subtitle">Good Deeds</h3>
       <div class="action-grid">
         <button class="action-btn btn-accent" id="logGhusl" title="Log Ghusl" data-category="good">
-          <span class="action-icon">🚿</span>
+          <span class="action-icon" aria-hidden="true">🚿</span>
           <span class="action-label">Ghusl</span>
           <span class="action-points" id="pointsGhusl">+25</span>
         </button>
         <button class="action-btn btn-green-subtle" id="logQuran" title="Log Quran reading" data-category="good">
-          <span class="action-icon">📖</span>
+          <span class="action-icon" aria-hidden="true">📖</span>
           <span class="action-label">Quran</span>
           <span class="action-points" id="pointsQuran">+15</span>
         </button>
         <button class="action-btn btn-green-subtle" id="logExercise" title="Log exercise" data-category="good">
-          <span class="action-icon">💪</span>
+          <span class="action-icon" aria-hidden="true">💪</span>
           <span class="action-label">Exercise</span>
           <span class="action-points" id="pointsExercise">+10</span>
         </button>
       </div>
+
       <h3 class="section-subtitle">Relapses (if needed)</h3>
       <div class="action-grid relapse-grid">
         <button class="action-btn btn-yellow-subtle" id="logMasturbation" title="Log relapse" data-category="relapse">
-          <span class="action-icon">⚠️</span>
+          <span class="action-icon" aria-hidden="true">⚠️</span>
           <span class="action-label">Masturbation</span>
           <span class="action-points" id="pointsMasturbation">-70</span>
         </button>
         <button class="action-btn btn-red-subtle" id="logPorn" title="Log relapse" data-category="relapse">
-          <span class="action-icon">🚫</span>
+          <span class="action-icon" aria-hidden="true">🚫</span>
           <span class="action-label">Porn</span>
           <span class="action-points" id="pointsPorn">-140</span>
         </button>
       </div>
     </section>
 
-    <!-- Stats Summary -->
+    <!-- Stats Summary Section -->
     <section class="card stats" aria-labelledby="statsHeading">
       <div class="card-header">
         <h2 id="statsHeading">Today's Summary</h2>
@@ -157,11 +168,11 @@
       <div class="stats-grid">
         <div class="stat-item">
           <div class="stat-label">Points Today</div>
-          <div class="stat-value" id="pointsToday">-100</div>
+          <div class="stat-value" id="pointsToday" role="status">-100</div>
         </div>
         <div class="stat-item">
           <div class="stat-label">Clean Hours</div>
-          <div class="stat-value" id="cleanHoursValue">0</div>
+          <div class="stat-value" id="cleanHoursValue" role="status">0</div>
         </div>
       </div>
     </section>
@@ -277,35 +288,35 @@
       <div class="modal-body">
         <div class="details-summary">
           <div class="detail-card">
-            <div class="detail-icon">🕌</div>
+            <div class="detail-icon" aria-hidden="true">🕌</div>
             <div class="detail-content">
               <div class="detail-label">Prayer Points</div>
               <div class="detail-value" id="detailPrayer">0</div>
             </div>
           </div>
           <div class="detail-card">
-            <div class="detail-icon">📚</div>
+            <div class="detail-icon" aria-hidden="true">📚</div>
             <div class="detail-content">
               <div class="detail-label">Study Points</div>
               <div class="detail-value" id="detailStudy">0</div>
             </div>
           </div>
           <div class="detail-card">
-            <div class="detail-icon">✨</div>
+            <div class="detail-icon" aria-hidden="true">✨</div>
             <div class="detail-content">
               <div class="detail-label">Good Deeds</div>
               <div class="detail-value" id="detailGood">0</div>
             </div>
           </div>
           <div class="detail-card">
-            <div class="detail-icon">⚠️</div>
+            <div class="detail-icon" aria-hidden="true">⚠️</div>
             <div class="detail-content">
               <div class="detail-label">Relapse Points</div>
               <div class="detail-value negative" id="detailRelapse">0</div>
             </div>
           </div>
           <div class="detail-card">
-            <div class="detail-icon">⏰</div>
+            <div class="detail-icon" aria-hidden="true">⏰</div>
             <div class="detail-content">
               <div class="detail-label">Clean Hours</div>
               <div class="detail-value" id="detailClean">0</div>
@@ -314,7 +325,7 @@
         </div>
         <div class="details-history">
           <h4 class="section-subtitle">Recent Activity</h4>
-          <div id="activityLog" class="activity-log">
+          <div id="activityLog" class="activity-log" role="log" aria-live="polite">
             <div class="muted small">No activity recorded yet.</div>
           </div>
         </div>
@@ -342,6 +353,14 @@
     </div>
   </div>
 
-  <script src="./script.js"></script>
+  <!-- Modular JavaScript (ES6 Modules) -->
+  <script type="module" src="./js/main.js"></script>
+  <script>
+    // Debug: Check if scripts are loading
+    console.log('HTML loaded successfully');
+    window.addEventListener('error', (e) => {
+      console.error('Error loading resource:', e.target.src || e.target.href);
+    });
+  </script>
 </body>
 </html>

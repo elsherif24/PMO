@@ -1,0 +1,175 @@
+/*
+  Typography Styles
+  Headings, text utilities, and font styling
+*/
+
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0 0 var(--spacing-sm);
+    font-weight: 650;
+    line-height: 1.2;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+}
+
+h3 {
+    font-size: 1.25rem;
+}
+
+h4 {
+    font-size: 1.1rem;
+}
+
+/* Text Size Utilities */
+.text-xs {
+    font-size: 0.75rem;
+}
+
+.text-sm {
+    font-size: 0.85rem;
+}
+
+.text-base {
+    font-size: 0.95rem;
+}
+
+.text-lg {
+    font-size: 1.1rem;
+}
+
+.text-xl {
+    font-size: 1.3rem;
+}
+
+.text-2xl {
+    font-size: 1.5rem;
+}
+
+/* Small Text */
+small,
+.small {
+    font-size: 0.85rem;
+}
+
+/* Text Color Utilities */
+.muted {
+    color: var(--muted);
+}
+
+.text-primary {
+    color: var(--text);
+}
+
+.text-accent {
+    color: var(--accent);
+}
+
+.text-success {
+    color: var(--green);
+}
+
+.text-warning {
+    color: var(--yellow);
+}
+
+.text-danger {
+    color: var(--red);
+}
+
+/* Font Weight Utilities */
+.font-normal {
+    font-weight: 400;
+}
+
+.font-medium {
+    font-weight: 500;
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+/* Text Alignment */
+.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* Text Transform */
+.uppercase {
+    text-transform: uppercase;
+}
+
+.lowercase {
+    text-transform: lowercase;
+}
+
+.capitalize {
+    text-transform: capitalize;
+}
+
+/* Letter Spacing */
+.tracking-tight {
+    letter-spacing: -0.05em;
+}
+
+.tracking-normal {
+    letter-spacing: 0;
+}
+
+.tracking-wide {
+    letter-spacing: 0.025em;
+}
+
+.tracking-wider {
+    letter-spacing: 0.05em;
+}
+
+/* Gradient Text */
+.gradient-text {
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.gradient-text-blue {
+    background: linear-gradient(135deg, #6bb2ff, #4a9eff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Tabular Numbers */
+.tabular-nums {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Truncate Text */
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

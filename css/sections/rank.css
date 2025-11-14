@@ -1,0 +1,93 @@
+/*
+  Rank Section Styles
+  Current rank display, progress bar, and points visualization
+*/
+
+/* Rank Display Body */
+.rank-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) 0;
+}
+
+/* Large Rank Image */
+.rank-img-lg {
+    width: min(200px, 50vw);
+    height: auto;
+    object-fit: contain;
+    image-rendering: auto;
+}
+
+/* Rank Labels Container */
+.rank-labels {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+/* Rank Title */
+.rank-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), #4a9eff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Points Display */
+.points-display {
+    font-size: 1.1rem;
+    margin: 0.25rem 0;
+}
+
+.points-value {
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: var(--accent);
+}
+
+/* Progress Bar Container */
+.progress-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-sm);
+}
+
+/* Progress Bar Track */
+.progress-bar {
+    flex: 1;
+    height: 12px;
+    background: #1a1f27;
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+/* Progress Bar Fill */
+.progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #4a9eff);
+    width: 0;
+    transition: width var(--transition-slow);
+}
+
+/* Progress Percentage Text */
+.progress-text {
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.9rem;
+    min-width: 3rem;
+    text-align: right;
+}
+
+/* Responsive Rank Adjustments */
+@media (max-width: 500px) {
+    .rank-img-lg {
+        width: min(160px, 50vw);
+    }
+}

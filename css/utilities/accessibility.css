@@ -1,0 +1,214 @@
+/*
+  Accessibility Utilities
+  Styles for improved accessibility and keyboard navigation
+*/
+
+/* Focus Styles for Keyboard Navigation */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Focus Within for Container Elements */
+.card:focus-within {
+    box-shadow: 0 0 0 2px rgba(107, 178, 255, 0.3);
+}
+
+/* Skip to Main Content Link */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--accent);
+    color: var(--bg);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    text-decoration: none;
+    z-index: var(--z-toast);
+    border-radius: 0 0 var(--radius-md) 0;
+    font-weight: 600;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Screen Reader Only Content */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+.sr-only-focusable:focus,
+.sr-only-focusable:active {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    :root {
+        --border: #4a5568;
+        --muted: #cbd5e0;
+    }
+
+    .btn,
+    .card,
+    .action-btn {
+        border-width: 2px;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Forced Colors Mode (Windows High Contrast) */
+@media (forced-colors: active) {
+
+    .btn,
+    .action-btn {
+        border: 1px solid;
+    }
+
+    .gradient-text,
+    .app-title {
+        -webkit-text-fill-color: currentColor;
+        background: none;
+        color: inherit;
+    }
+}
+
+/* Focus Indicator Enhancement */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Remove Focus for Mouse Users */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Accessible Link Styles */
+a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+/* Keyboard Navigation Indicators */
+.keyboard-focus {
+    outline: 2px dashed var(--accent);
+    outline-offset: 4px;
+}
+
+/* Visually Hidden but Accessible */
+.visually-hidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    white-space: nowrap;
+}
+
+/* Interactive Element States */
+button[aria-pressed="true"] {
+    background: var(--accent);
+    color: var(--bg);
+}
+
+button[aria-expanded="true"]::after {
+    content: " ▲";
+}
+
+button[aria-expanded="false"]::after {
+    content: " ▼";
+}
+
+/* Disabled State Clarity */
+[disabled],
+[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Live Region Announcements */
+[aria-live="polite"],
+[aria-live="assertive"] {
+    position: relative;
+}
+
+/* Improve Touch Targets */
+@media (pointer: coarse) {
+
+    button,
+    a,
+    input[type="checkbox"],
+    input[type="radio"] {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* Color Blind Friendly Patterns */
+.pattern-success::before {
+    content: "✓ ";
+}
+
+.pattern-error::before {
+    content: "✕ ";
+}
+
+.pattern-warning::before {
+    content: "⚠ ";
+}
+
+/* Print Styles */
+@media print {
+
+    .no-print,
+    .modal,
+    .btn,
+    button {
+        display: none !important;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+
+    .card {
+        border: 1px solid black;
+        page-break-inside: avoid;
+    }
+}
